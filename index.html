@@ -107,6 +107,9 @@ input[type=text]{font:inherit;color:var(--fg);background:var(--bg);border:1px so
 .big-card{width:190px;padding:16px;border-radius:18px;color:#1b0b20;display:flex;flex-direction:column;gap:6px}
 .big-card .y{font-family:var(--f-num);font-size:3rem;line-height:1}
 .big-card .a{font-weight:800}
+.cover{width:100%;aspect-ratio:1;border-radius:12px;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,.35);margin-bottom:6px;animation:pop .45s ease-out}
+.big-card .alb{font-size:.8rem;opacity:.75;font-style:italic}
+@keyframes pop{from{opacity:0;transform:scale(.85) rotate(-4deg)}to{opacity:1;transform:none}}
 .verdict{font-family:var(--f-display);font-size:1.6rem}
 .ok{color:var(--teal)} .no{color:var(--bad)}
 label.check{display:flex;gap:8px;align-items:center;cursor:pointer}
@@ -221,7 +224,7 @@ function next(){
 
 // ---------- Audio (30-Sekunden-Vorschau über die iTunes-Suche, falls erreichbar) ----------
 const audio=document.getElementById("audio");let playing=false,audioMsg="";
-const cache={},pending={};
+const cache={},pending={},art={};
 // Sucht die Vorschau schon beim Ziehen der Karte, damit der Tipp auf «Abspielen» sofort abspielt (iOS verlangt das).
 function findPreview(s){
   if(s.i in cache)return Promise.resolve(cache[s.i]);
@@ -230,6 +233,8 @@ function findPreview(s){
     .then(r=>r.json()).then(j=>{
       const first=s.a.toLowerCase().split(/[ ,&]/)[0].replace(/[^a-z0-9*]/g,"");
       const hit=j.results.find(x=>x.previewUrl&&x.artistName.toLowerCase().includes(first))||j.results.find(x=>x.previewUrl);
+      const pic=(hit&&hit.artworkUrl100)?hit:j.results.find(x=>x.artworkUrl100&&x.artistName.toLowerCase().includes(first));
+      if(pic)art[s.i]={src:pic.artworkUrl100.replace(/100x100bb/,"600x600bb"),album:pic.collectionName||""};
       return cache[s.i]=hit?hit.previewUrl:null;
     }).finally(()=>{delete pending[s.i]});
 }
@@ -340,6 +345,7 @@ function renderTurn(){
 
 function renderReveal(){
   const r=S.result,p=S.players[r.player],s=SONGS[r.card];
+  if(!art[s.i]&&!(s.i in cache))findPreview(s).then(()=>{if(S.phase==="reveal"&&S.result.card===s.i&&art[s.i])render()}).catch(()=>{});
   const line=sorted(p);
   const verdict=r.bought?`<span class="ok">Gekauft!</span>`:r.ok?`<span class="ok">Richtig!</span>`:`<span class="no">Daneben.</span>`;
   const extra=[];
@@ -351,7 +357,7 @@ function renderReveal(){
   ${scoreHTML()}
   <section class="panel">
     <div class="reveal">
-      <div class="big-card" style="background:${decColor(s.y)}"><span class="y">${s.y}</span><span class="a">${esc(s.a)}</span><span>${esc(s.t)}</span></div>
+      <div class="big-card" style="background:${decColor(s.y)}">${art[s.i]?`<img class="cover" src="${esc(art[s.i].src)}" alt="Albumcover" onerror="this.remove()">`:""}<span class="y">${s.y}</span><span class="a">${esc(s.a)}</span><span>${esc(s.t)}</span>${art[s.i]&&art[s.i].album?`<span class="alb">Album: ${esc(art[s.i].album)}</span>`:""}</div>
       <div style="display:flex;flex-direction:column;gap:8px;min-width:0;flex:1">
         <p class="verdict">${verdict}</p>${extra.map(e=>`<p>${e}</p>`).join("")}
       </div>
