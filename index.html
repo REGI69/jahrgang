@@ -60,6 +60,8 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .players .row input{flex:1;min-width:0}
 input[type=text]{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:.6em .8em}
 .chip{padding:.45em .9em;font-size:.9rem}
+.donate{text-align:center;gap:10px}
+.donate-btn{display:inline-block;align-self:center;padding:.8em 1.4em;border-radius:999px;background:var(--amber);color:#2a1205;font-weight:800;text-decoration:none}
 .chip[aria-pressed=true]{background:var(--coral);border-color:var(--coral);color:#2a0710}
 .rules{margin:0;padding-left:1.2em;color:var(--muted);display:flex;flex-direction:column;gap:4px}
 
@@ -181,6 +183,9 @@ const decColor=y=>({1970:"#ffb23f",1980:"#ff7aa8",1990:"#7fe0b7",2000:"#9fb7ff",
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const MAXTOK=5;
+// Spenden-Link (TWINT über Zahlungsanbieter). Leer = Knopf ausgeblendet.
+const DONATE_URL="";
+function donateHTML(txt){return /^https:\/\//.test(DONATE_URL)?`<section class="panel donate"><p>${txt}</p><a class="donate-btn" href="${esc(DONATE_URL)}" target="_blank" rel="noopener">☕ Spenden per TWINT</a></section>`:""}
 
 let S;
 const fresh=()=>({phase:"setup",names:["Spieler 1","Spieler 2","Spieler 3"],target:10,decades:[...DECADES],deOnly:false,
@@ -301,7 +306,8 @@ function renderSetup(){
     </ol>
     <p class="note">Ohne Vorschau übernimmt eine Person die Rolle des DJs: Sie schaut sich heimlich den Titel an und spielt ihn über Spotify oder YouTube ab.</p>
   </section>
-  <div class="row"><button class="primary" data-act="start" ${n<S.names.length*2+5||S.names.filter(x=>x.trim()).length<2?"disabled":""}>Spiel starten</button></div>`;
+  <div class="row"><button class="primary" data-act="start" ${n<S.names.length*2+5||S.names.filter(x=>x.trim()).length<2?"disabled":""}>Spiel starten</button></div>
+  ${donateHTML("Gefällt dir «Jahrgang»? Das Spiel ist gratis und ohne Werbung. Wer mag, kann mir eine kleine Spende schicken.")}`;
 }
 
 function renderTurn(){
@@ -377,7 +383,8 @@ function renderWin(){
   <p class="lead">${S.target} Hits sauber in der richtigen Reihenfolge.</p></div><div class="vinyl spin" aria-hidden="true"><div class="label">★</div></div></header>
   <section class="panel"><div class="tl-wrap"><div class="tl">${sorted(w).map(i=>cardHTML(i)).join("")}</div></div></section>
   ${scoreHTML()}
-  <div class="row"><button class="primary" data-act="again">Nochmals mit denselben Leuten</button><button data-act="quit">Neues Spiel einrichten</button></div>`;
+  <div class="row"><button class="primary" data-act="again">Nochmals mit denselben Leuten</button><button data-act="quit">Neues Spiel einrichten</button></div>
+  ${donateHTML("Hat euch das Spiel gefallen? Über eine kleine Spende freue ich mich sehr.")}`;
 }
 
 // ---------- Eingaben ----------
