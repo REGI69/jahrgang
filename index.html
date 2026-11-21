@@ -60,8 +60,14 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .players .row input{flex:1;min-width:0}
 input[type=text]{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:.6em .8em}
 .chip{padding:.45em .9em;font-size:.9rem}
-.donate{text-align:center;gap:10px}
-.donate-btn{display:inline-block;align-self:center;padding:.8em 1.4em;border-radius:999px;background:var(--amber);color:#2a1205;font-weight:800;text-decoration:none}
+.donate{display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px;background:#fff3c4;border:0;border-radius:20px;padding:20px;color:#2a1205}
+.donate h2{font-size:1.35rem;color:#2a1205;line-height:1.15}
+.donate p{margin:0;font-weight:600;line-height:1.35}
+.donate .steps{margin:0;padding:0;list-style:none;font-weight:800;display:grid;gap:4px}
+.donate .qr{background:#fff;border-radius:12px;padding:14px;width:140px;height:140px;box-sizing:border-box;display:block}
+.donate .qr svg{display:block;width:100%;height:100%}
+.donate-btn{display:inline-block;justify-self:start;margin-top:4px;padding:.7em 1.3em;border-radius:999px;background:#2a1205;color:#fff3c4;font-weight:800;text-decoration:none}
+@media (max-width:420px){.donate{grid-template-columns:1fr}.donate .qr{justify-self:center;width:180px;height:180px}}
 .chip[aria-pressed=true]{background:var(--coral);border-color:var(--coral);color:#2a0710}
 .rules{margin:0;padding-left:1.2em;color:var(--muted);display:flex;flex-direction:column;gap:4px}
 
@@ -184,8 +190,10 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const MAXTOK=5;
 // Spenden-Link (TWINT über Zahlungsanbieter). Leer = Knopf ausgeblendet.
-const DONATE_URL="";
-function donateHTML(txt){return /^https:\/\//.test(DONATE_URL)?`<section class="panel donate"><p>${txt}</p><a class="donate-btn" href="${esc(DONATE_URL)}" target="_blank" rel="noopener">☕ Spenden per TWINT</a></section>`:""}
+const DONATE_URL="https://pay.sumup.com/p/s/XDXDNU93VV";
+// QR-Code (SVG) für DONATE_URL, wird beim Setzen des Links mitgeneriert.
+const DONATE_QR="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 29 29' ><path class='qrline' stroke='#2a1205' d='M0 0.5h7m1 0h1m3 0h1m2 0h1m3 0h2m1 0h7m-29 1h1m5 0h1m1 0h2m1 0h2m1 0h1m2 0h1m4 0h1m5 0h1m-29 1h1m1 0h3m1 0h1m2 0h5m1 0h1m4 0h1m1 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m1 0h1m4 0h5m2 0h1m1 0h3m1 0h1m-29 1h1m1 0h3m1 0h1m3 0h1m2 0h2m1 0h1m2 0h2m1 0h1m1 0h3m1 0h1m-29 1h1m5 0h1m4 0h1m2 0h1m1 0h5m1 0h1m5 0h1m-29 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-21 1h2m1 0h1m1 0h6m-19 1h1m1 0h2m1 0h3m5 0h2m2 0h2m3 0h1m2 0h1m1 0h2m-28 1h1m2 0h2m1 0h2m3 0h1m2 0h2m2 0h2m1 0h3m3 0h1m-29 1h1m1 0h2m1 0h3m1 0h2m3 0h1m1 0h1m6 0h2m1 0h2m-28 1h1m1 0h1m1 0h2m1 0h3m1 0h1m1 0h4m1 0h1m1 0h2m1 0h2m3 0h1m-29 1h1m2 0h1m1 0h3m1 0h2m1 0h1m2 0h5m5 0h2m-27 1h1m3 0h2m1 0h3m2 0h2m1 0h1m3 0h1m1 0h3m2 0h3m-28 1h1m2 0h1m1 0h2m1 0h3m2 0h1m2 0h7m2 0h3m-27 1h1m1 0h1m3 0h1m2 0h1m1 0h1m1 0h1m3 0h1m7 0h1m-28 1h1m3 0h3m2 0h1m5 0h4m1 0h2m2 0h2m1 0h1m-26 1h1m1 0h1m4 0h1m1 0h1m1 0h1m1 0h4m1 0h1m2 0h1m1 0h3m-28 1h1m3 0h4m1 0h1m1 0h1m3 0h2m1 0h1m3 0h3m1 0h1m-23 1h1m6 0h1m4 0h2m1 0h1m1 0h1m1 0h1m2 0h1m-26 1h2m2 0h2m1 0h1m1 0h2m1 0h1m4 0h1m1 0h7m-19 1h3m1 0h5m1 0h1m1 0h1m3 0h5m-29 1h7m1 0h1m2 0h3m3 0h4m1 0h1m1 0h2m1 0h1m-28 1h1m5 0h1m1 0h2m1 0h1m3 0h1m3 0h2m3 0h2m2 0h1m-29 1h1m1 0h3m1 0h1m3 0h3m1 0h1m5 0h5m1 0h1m-27 1h1m1 0h3m1 0h1m1 0h2m4 0h1m1 0h1m1 0h1m1 0h2m1 0h3m2 0h1m-29 1h1m1 0h3m1 0h1m1 0h1m2 0h1m2 0h1m1 0h1m2 0h1m1 0h1m1 0h1m2 0h1m1 0h1m-29 1h1m5 0h1m3 0h3m1 0h3m1 0h3m3 0h2m1 0h1m-28 1h7m1 0h1m2 0h2m1 0h1m2 0h5m1 0h1m1 0h1m1 0h1'/></svg>";
+function donateHTML(txt){return /^https:\/\//.test(DONATE_URL)?`<section class="panel donate"><div style="display:grid;gap:10px"><h2>Jetzt für «Jahrgang» spenden</h2><p>${txt}</p><ul class="steps"><li>QR-Code mit der Handy-Kamera scannen</li><li>CHF 5 sicher über SumUp bezahlen</li></ul><a class="donate-btn" href="${esc(DONATE_URL)}" target="_blank" rel="noopener">☕ CHF 5 spenden</a></div>${DONATE_QR?`<a class="qr" href="${esc(DONATE_URL)}" target="_blank" rel="noopener" aria-label="QR-Code zum Spenden">${DONATE_QR}</a>`:""}</section>`:""}
 
 let S;
 const fresh=()=>({phase:"setup",names:["Spieler 1","Spieler 2","Spieler 3"],target:10,decades:[...DECADES],deOnly:false,
